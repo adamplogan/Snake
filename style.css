@@ -4,6 +4,10 @@
                 font-family: 'Poppins', sans-serif;
             
             }
+            .score{
+                align-items: right;
+                color: white;
+            }
             .about{
                 color:white;
                 margin-top: 70px;
@@ -15,7 +19,7 @@
                 text-align: center;
             }
             .boardmargin{
-                margin-bottom: 50px;
+                margin-bottom: 40px;
             }
             div{
                 margin-top: 60px;
@@ -31,12 +35,12 @@
                 text-align: center;
                 line-height: 60px;
                 letter-spacing: 2px;
-                margin: 20px;
+                margin: 10px;
                 transition: 0.5s;
                 font-size: larger;
             }
             a:hover{
-                background: #ec0b36 url(pictures/pixel.png);
+                background: #ec0b36 url(/pictures/pixel.png);
                 /*background-size: 180px; */
                 transition-delay: 0.3s;
                 animation: animate 0.4s steps(8) forwards;
