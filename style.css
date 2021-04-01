@@ -40,7 +40,7 @@
                 font-size: larger;
             }
             a:hover{
-                background: #ec0b36 url(/pictures/pixel.png);
+                background: #ec0b36 url(pictures/pixel.png);
                 /*background-size: 180px; */
                 transition-delay: 0.3s;
                 animation: animate 0.4s steps(8) forwards;
