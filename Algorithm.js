@@ -17,7 +17,7 @@ let eat = new Audio();
 let die = new Audio();
 
 eat.src = "audio/coin.mp3";
-die.src = "audio/wock.mp3";
+die.src = "audio/oof.mp3";
 
 //make snake
 let snake = [];
