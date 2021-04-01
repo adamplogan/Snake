@@ -1,6 +1,9 @@
 const cvs = document.getElementById("canvas");
 const ctx = cvs.getContext("2d");
 
+const scoreboard = document.getElementById("scoreboard");
+const sb = scoreboard.getContext("2d");
+
 //make box
 const box = 32;
 
@@ -12,13 +15,25 @@ board.src = "pictures/board.jpg";
 const apple = new Image();
 apple.src = "pictures/apple.png";
 
+const logo = new Image();
+logo.src = "pictures/alogo.png";
+
+const lean = new Image();
+lean.src = "pictures/wock.png";
+
+const skyrim = new Image();
+skyrim.src = "pictures/skyrim.png";
+
 //load audio
 let eat = new Audio();
 let die = new Audio();
+let wocky = new Audio();
+let sky = new Audio();
 
+sky.src = "audio/sky.mp3";
 eat.src = "audio/coin.mp3";
 die.src = "audio/oof.mp3";
-
+wocky.src = "audio/wock.mp3";
 //make snake
 let snake = [];
 
@@ -33,6 +48,9 @@ let food = {
     x : Math.floor(Math.random()*15)*box,
     y : Math.floor(Math.random()*15)*box
 };
+
+//create score
+let score = 0;
 
 //control snake
 let d;
@@ -68,15 +86,46 @@ function draw(){
     ctx.drawImage(board, 0, 0);
 
     for(let i = 0; i < snake.length; i++){
+        
+        // color if Dragon Born
 
-        ctx.fillStyle = (i == 0)? "black" : "DarkRed";
-        ctx.fillRect(snake[i].x, snake[i].y, box, box);
+        if(score%20 <= 0 && score != 0){
+            ctx.fillStyle = (i == 0)? "DarkGreen" : "black";
+            ctx.fillRect(snake[i].x, snake[i].y, box, box);
 
-        ctx.strokeStyle = "red";
-        ctx.strokeRect(snake[i].x, snake[i].y, box, box);
+            ctx.strokeStyle = "green";
+            ctx.strokeRect(snake[i].x, snake[i].y, box, box);
+        }
+
+        // color if wocky slush
+        else if(score%8 <= 0 && score != 0){
+            ctx.fillStyle = (i == 0)? "black" : "purple";
+            ctx.fillRect(snake[i].x, snake[i].y, box, box);
+
+            ctx.strokeStyle = "violet";
+            ctx.strokeRect(snake[i].x, snake[i].y, box, box);
+        }
+        // color regular snake
+        else{
+            ctx.fillStyle = (i == 0)? "black" : "DarkRed";
+            ctx.fillRect(snake[i].x, snake[i].y, box, box);
+        
+            ctx.strokeStyle = "red";
+            ctx.strokeRect(snake[i].x, snake[i].y, box, box);
+        }
     }
-    
-    ctx.drawImage(apple, food.x, food.y)
+    // draw skyrim food if 20 combo
+    if(score%20 == 19){
+        ctx.drawImage(skyrim, food.x, food.y);
+    }
+    // draw wock food if 8 combo
+    else if (score%8 == 7){
+        ctx.drawImage(lean, food.x, food.y);
+    }
+    // draw regular apple
+    else{
+        ctx.drawImage(apple, food.x, food.y);
+    }
 
     //old head position
     let snakeX = snake[0].x;
@@ -91,7 +140,18 @@ function draw(){
 
     // snake eats food
     if(snakeX == food.x && snakeY == food.y){
+        score++;
+        //play sky music if 20 combo
+        if(score%20 == 0){
+            sky.play();
+        }
+        //play wocky if 8 combo
+        else if (score%8 == 0){
+            wocky.play();
+        }
+        else{
         eat.play();
+        }
         food = {
             x : Math.floor(Math.random()*15)*box,
             y : Math.floor(Math.random()*15)*box
@@ -116,6 +176,15 @@ function draw(){
     }
 
     snake.unshift(newHead);
+
+    //scoreboard
+    sb.fillStyle = "black";
+    sb.fillRect(100,10, 80, 100)
+    sb.fillStyle = "white";
+    sb.font = "40px Poppin";
+    sb.drawImage(logo, 36, 0)
+    sb.fillText(" : ", 90, 40);
+    sb.fillText(score, 130, 43);
 
  }
 
