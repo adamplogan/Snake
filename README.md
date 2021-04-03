@@ -1,4 +1,4 @@
 # Snake
 
-PLAY GAME***
+PLAY GAME: 
 https://adamplogan.github.io/Snake/
