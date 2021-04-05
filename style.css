@@ -4,26 +4,82 @@
                 font-family: 'Poppins', sans-serif;
             
             }
-            .score{
-                align-items: right;
+            .float-container{
+                align-items: center;
+            }
+
+            .float-child1{
+                width: 50%;
+                float: left;
+                margin-right: 710px;
+
+            }
+            .float-child2{
+                float: left;
+            }
+            .radio{
+                display: inline-flex;
+                align-items: center;
+                cursor: pointer;
+                margin-right: 15px;
                 color: white;
+                font-size:x-large;
+            }
+            .radio__input{
+                display: none;
+            }
+            .radio__radio{
+                width: 1.25em;
+                height: 1.25em;
+                border: 2px solid #d8e4e2;
+                border-radius: 50%;
+                margin-right: 10px;
+                box-sizing: border-box;
+                padding: 2px;
+            }
+            .radio__radio::after{
+                content: "";
+                width: 100%;
+                height: 100%;
+                display: block;
+                background: white;
+                border-radius: 50%;
+                transform: scale(0);
+                transition: transform 0.15s;
+            }
+            .radio__input:checked + .radio__radio::after{
+                transform: scale(1);
+            }
+            .score{
+                color: white;
+                margin-right: 692px;
+                margin-top: 25px;
+                
             }
             .about{
                 color:white;
                 margin-top: 70px;
                 margin-bottom: 70px;
+                user-select:none;
             }
             p{
                 color: white;
-                margin: 20px 200px 20px 200px;
+                margin: 60px 200px 40px 200px;
                 text-align: center;
             }
             .boardmargin{
                 margin-bottom: 40px;
+                margin-top: 40px;
+                user-select:none;
+            }
+            canvas{
+                margin-left: 700px;
             }
             div{
-                margin-top: 60px;
-                margin-bottom: 60px;
+                margin-top: 0px;
+                margin-bottom: 0px;
+                align-items: center;
+                vertical-align: middle;
             }
             .pixelbutton{
                 position: relative;
@@ -38,9 +94,11 @@
                 margin: 10px;
                 transition: 0.5s;
                 font-size: larger;
+                cursor:pointer;
+                user-select:none;
             }
             a:hover{
-                background: #ec0b36 url(pictures/pixel.png);
+                background: #ec0b36 url(/pictures/pixel.png);
                 /*background-size: 180px; */
                 transition-delay: 0.3s;
                 animation: animate 0.4s steps(8) forwards;
@@ -59,17 +117,17 @@
                 font-size: xx-large;
             }
             div{
-                text-align: center;
+                text-align: left;
                 color:rgb(255, 255, 255);
             }
             html, body{
                 background-color:rgb(0, 0, 0);
-                align-items: center;
+                /* align-items: left; */
                 flex-direction: column;
                 min-height: 100vh;
                 display: flex;
                 margin: 0;
-
+                
             }
             .center{
                 display: block;
