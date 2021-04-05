@@ -271,7 +271,7 @@ function changeSpeed(){
         speed = 35;
     }
     else if(ultraSpeed.checked == true){
-        speed = 15;
+        speed = 10;
     }
 }
 
