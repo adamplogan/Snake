@@ -24,6 +24,7 @@
                 margin-right: 15px;
                 color: white;
                 font-size:x-large;
+                user-select:none;
             }
             .radio__input{
                 display: none;
@@ -66,6 +67,10 @@
                 color: white;
                 margin: 60px 200px 40px 200px;
                 text-align: center;
+                user-select:none;
+            }
+            img{
+                user-select: none;
             }
             .boardmargin{
                 margin-bottom: 40px;
