@@ -46,8 +46,8 @@ snake[0] = {
 //make food
 
 let food = {
-    x : Math.floor(Math.random()*45)*box,
-    y : Math.floor(Math.random()*30)*box
+     x : Math.floor(Math.random()*45)*box,
+     y : Math.floor(Math.random()*30)*box
 };
 
 //create score
@@ -55,6 +55,10 @@ let score = 0;
 
 //control snake
 let d;
+//ai direction
+var current_direction;
+//fix ai
+var mode = 1;
 
 document.addEventListener("keydown", direction);
 function direction(event){
@@ -131,13 +135,68 @@ function draw(){
     let snakeX = snake[0].x;
     let snakeY = snake[0].y;
     
+    //play/ai radio buttons
+    // var playMode = document.getElementById("play");
+    // var aiMode = document.getElementById("ai");
 
-    //which direction
-    d = direction;
-    if(d == "LEFT") snakeX -= box;
-    if(d == "UP") snakeY -= box;
-    if(d == "RIGHT") snakeX += box;
-    if(d == "DOWN") snakeY += box;
+    //enable arrow keys with play mode
+    if(mode == 1){
+        d = direction;
+        if(d == "LEFT") snakeX -= box;
+        if(d == "UP") snakeY -= box;
+        if(d == "RIGHT") snakeX += box;
+        if(d == "DOWN") snakeY += box;
+    }
+
+    //AI MODE FUNCTIONALITY 
+    if(mode == 2){
+        //Left
+        if(snakeX > food.x && current_direction != "RIGHT"){
+            current_direction = "LEFT";
+            snakeX -= box;
+        } 
+        //Right
+        else if(snakeX < food.x && current_direction != "LEFT"){
+            current_direction = "RIGHT";
+            snakeX += box;
+        }
+        //Up
+        else if(snakeY > food.y && current_direction != "DOWN"){
+            current_direction = "UP";
+            snakeY -= box;
+        } 
+        //Down
+        else if(snakeY < food.y && current_direction != "UP"){
+            current_direction = "DOWN";
+            snakeY += box;
+        }
+        // IF FOOD SPAWNS DIRECTLY BEHIND A.I. ---> RUN INTO WALL 
+        // AI VERSION 1 WEAKNESS:
+        // 1. Cannot Detect Body
+        // 2. Cannot Handle Food Spawning Behind It
+        else{
+            switch(current_direction){
+                case "LEFT":
+                    current_direction = "LEFT";
+                    snakeX -= box;
+                    break;
+                case "RIGHT":
+                    current_direction = "RIGHT";
+                    snakeX += box;
+                    break;
+                case "UP":
+                    current_direction = "UP";
+                    snakeY -= box;
+                    break;
+                case "DOWN":
+                    current_direction = "DOWN";
+                    snakeY += box;
+                    break;
+            }
+            
+        }
+        
+     }
 
 
     // snake eats food
@@ -193,11 +252,15 @@ function draw(){
 //call draw function
 let game = setInterval(draw, 65);
 
-function resetGame(){
-    var speed = 65;
-    var defaultSpeed = document.getElementById("default");
-    var slowSpeed = document.getElementById("slow");
-    var fastSpeed = document.getElementById("fast");
+var defaultSpeed = document.getElementById("default");
+var slowSpeed = document.getElementById("slow");
+var fastSpeed = document.getElementById("fast");
+var ultraSpeed = document.getElementById("ultra")
+var playMode = document.getElementById("play");
+var aiMode = document.getElementById("ai");
+
+function changeSpeed(){
+
     if(defaultSpeed.checked == true){
         speed = 65;
     }
@@ -205,8 +268,25 @@ function resetGame(){
         speed = 100;
     }
     else if(fastSpeed.checked == true){
-        speed = 30;
+        speed = 35;
     }
+    else if(ultraSpeed.checked == true){
+        speed = 15;
+    }
+}
+
+function changeMode(){
+    if(playMode.checked == true){
+        mode = 1;
+    }
+    else if(aiMode.checked == true){
+        mode = 2;
+    }
+}
+
+function resetGame(){
+    changeSpeed();
+    changeMode();
     clearInterval(game);
     score = 0;
     direction = 0;
