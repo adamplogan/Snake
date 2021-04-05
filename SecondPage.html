@@ -3,16 +3,54 @@
     <head>
         <link rel="stylesheet" href="style.css" />    
         <title>Adam's Snake Game</title>
+        <style>
+            body{
+                transform: scale(.65);
+                transform-origin: top center;
+                overflow: hidden;
+                align-items: center;
+            }
+        </style>
     </head>
     <body>
         <h1 class="best_class_ever boardmargin">WELCOME TO ADAM'S SNAKE GAME</h1>
-
-        <canvas id="canvas" width="480" height="480" class="boardmargin"></canvas>
+        <div class="float-container">
+            <div class="float-child1">
+                <canvas id="canvas" width="1440" height="960" class="canvas"></canvas>
+            </div>
+            <div class = "float-child2">
+                <form>
+                    <ol style = "list-style-type:none;">
+                        <li>
+                            <label for="default" class="radio">
+                                <input type = "radio" name="default-slow-fast" id="default" class="radio__input"  checked>
+                                <div class=radio__radio></div>
+                                Default
+                            </label>
+                        </li>
+                        <li>
+                            <label for="slow" class="radio">
+                                <input type = "radio" name="default-slow-fast" id="slow" class="radio__input" >
+                                <div class=radio__radio></div>
+                                Slow
+                            </label>
+                        </li>
+                        <li>
+                        <label for="fast" class="radio">
+                            <input type = "radio" name="default-slow-fast" id="fast" class="radio__input" >
+                            <div class=radio__radio></div>
+                            Fast
+                        </label>
+                        </li>
+                    </ol>            
+                </form>
+            </div>
+        </div>
         <canvas id="scoreboard" width="200px" height="100px" class="score"></canvas>
-        </canvas>
         <script src="Algorithm.js"></script>
-
-        <a href="SecondPage.html" class="pixelbutton">RESET GAME</a>
+        
+        <a onclick="resetGame()" class="pixelbutton">RESET GAME</a>
         <a href="index.html" class="pixelbutton">GO TO MENU</a>
     </body>
+    
 </html>
