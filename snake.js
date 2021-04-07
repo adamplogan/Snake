@@ -208,7 +208,7 @@ function draw(){
         }
         //play wocky if 8 combo
         else if (score%8 == 0){
-            wocky.play();
+            eat.play();
         }
         else{
         eat.play();
