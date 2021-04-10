@@ -1,8 +1,8 @@
 <!DOCTYPE html>
 <html>
     <head>
-        <link rel= "shortcut icon" type="image/png" href="pictures/favicon.png?">
-        <link rel="stylesheet" href="style.css" />    
+        <link rel="stylesheet" href="style.css" />
+        <link rel= "shortcut icon" type="image/png" href="pictures/favicon.png">    
         <title>Adam's Snake Game</title>
         <style>
             body{
@@ -14,7 +14,7 @@
         </style>
     </head>
     <body>
-        <h1 class="best_class_ever boardmargin">WELCOME TO ADAM'S SNAKE GAME</h1>
+        <h1 class=" boardmargin">WELCOME TO ADAM'S SNAKE GAME</h1>
         <div class="float-container">
             <div class="float-child1">
                 <canvas id="canvas" width="1440" height="960" class="canvas"></canvas>
@@ -40,7 +40,7 @@
                         <label for="fast" class="radio">
                             <input type = "radio" name="default-slow-fast" id="fast" class="radio__input" >
                             <div class=radio__radio></div>
-                            Fast
+                                Fast
                         </label>
                         </li>
                         <li>
@@ -64,8 +64,23 @@
                             <label for="ai" class="radio">
                                 <input type = "radio" name="ai-play-mode" id="ai" class="radio__input" >
                                 <div class=radio__radio></div>
-                                A.I. Version 1
+                                Snake Bot 1.0 (The Caveman)
                             </label>
+                        </li>
+                        <li>
+                            <label for="ai2" class="radio">
+                                <input type = "radio" name="ai-play-mode" id="ai2" class="radio__input" >
+                                <div class=radio__radio></div>
+                                Snake Bot 2.0 (A* Pathfinding)
+                            </label>
+                        </li>
+                            <br> <br>
+                        <li>
+                            <label for="vision" class="radio">
+                                <input type = "checkbox" name="vision" id="vision" class="radio__input" >
+                                <div class=radio__radio></div>
+                                Snake Vision (2.0 ONLY)
+                        </label>
                         </li>
                     </ol>            
                 </form>
