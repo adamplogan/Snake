@@ -4,6 +4,11 @@
                 font-family: 'Poppins', sans-serif;
             
             }
+
+            br{
+                user-select:none;
+            }
+
             .float-container{
                 align-items: center;
             }
@@ -101,6 +106,7 @@
                 font-size: larger;
                 cursor:pointer;
                 user-select:none;
+                
             }
             a:hover{
                 background: #ec0b36 url(pictures/pixel.png);
