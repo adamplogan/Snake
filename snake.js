@@ -10,34 +10,47 @@ const box = 32;
 //load images
 
 const board = new Image();
-board.src = "pictures/board2.jpg";
-
-const apple = new Image();
-apple.src = "pictures/apple.png";
-
 const logo = new Image();
+const apple = new Image();
+const apple2 = new Image();
+const apple3 = new Image();
+const apple4 = new Image();
+const apple5 = new Image();
+
+board.src = "pictures/board3.jpg";
 logo.src = "pictures/alogo.png";
-
-const lean = new Image();
-lean.src = "pictures/wock.png";
-
-const skyrim = new Image();
-skyrim.src = "pictures/skyrim.png";
+apple.src = "pictures/apple1.png";
+apple2.src = "pictures/apple2.png";
+apple3.src = "pictures/apple3.png";
+apple4.src = "pictures/apple4.png";
+apple5.src = "pictures/apple5.png";
 
 if(typeof console == "undefined") var console = { log: function(){}}
 
 //load audio
-let eat = new Audio();
+let eat1 = new Audio();
+let eat2 = new Audio();
+let eat3 = new Audio();
+let eat4 = new Audio();
+let eat5 = new Audio();
 let die = new Audio();
-let wocky = new Audio();
-let sky = new Audio();
-let yoshi = new Audio();
 
-sky.src = "audio/sky.mp3";
-eat.src = "audio/coin.mp3";
-die.src = "audio/oof.mp3";
-wocky.src = "audio/wock.mp3";
-yoshi.src = "audio/yoshi.mp3";
+
+eat1.src = "audio/eat1.mp3";
+eat2.src = "audio/eat2.mp3";
+eat3.src = "audio/eat3.mp3";
+eat4.src = "audio/eat4.mp3";
+eat5.src = "audio/eat5.mp3";
+die.src = "audio/die.mp3";
+
+
+
+eat1.volume = 0.3;
+eat2.volume = 0.3;
+eat3.volume = 0.3;
+eat4.volume = 0.3;
+eat5.volume = 0.3;
+die.volume = 0.3;
 
 //make snake
 
@@ -96,60 +109,89 @@ function collision(head, array){
     }
 }
 
+    var isColored = false;
+    var coloredAppleChance = Math.floor(Math.random()*100) + 1;
+    var whichApple = Math.floor(Math.random()*4) + 1;
+    var snakeColor = "white";
+    var headColor = "white";
+    var appleColor = "white";
+    var appleColor2 = "white";
+
 //draw to canvas
 function draw(){
 
     ctx.drawImage(board, 0, 0);
+    ctx.lineWidth = 5;
 
-    for(let i = 0; i < snake.length; i++){
-        
-        // color if Dragon Born
-        if(score%20 <= 0 && score != 0){
-            ctx.fillStyle = (i == 0)? "DarkGreen" : "black";
-            ctx.fillRect(snake[i].x, snake[i].y, box, box);
+    isColored = false;
 
-            ctx.strokeStyle = "green";
-            ctx.strokeRect(snake[i].x, snake[i].y, box, box);
-        }
-
-        // color if wocky slush
-        else if(score%8 <= 0 && score != 0){
-            ctx.fillStyle = (i == 0)? "black" : "purple";
-            ctx.fillRect(snake[i].x, snake[i].y, box, box);
-
-            ctx.strokeStyle = "violet";
-            ctx.strokeRect(snake[i].x, snake[i].y, box, box);
-        }
-        // color regular snake
-        else{
-            ctx.fillStyle = (i == 0)? "black" : "DarkRed";
-            ctx.fillRect(snake[i].x, snake[i].y, box, box);
-        
-            ctx.strokeStyle = "red";
-            ctx.strokeRect(snake[i].x, snake[i].y, box, box);
-        }
+    if(score >= 150 && coloredAppleChance <= 100){
+        isColored = true;
     }
-    // draw skyrim food if 20 combo
-    if(score%20 == 19){
-        ctx.drawImage(skyrim, food.x, food.y);
+    else if(score >= 125 && coloredAppleChance <= 90){
+        isColored = true;
     }
-    // draw wock food if 8 combo
-    else if (score%8 == 7){
-        ctx.drawImage(lean, food.x, food.y);
+    else if(score >= 100 && coloredAppleChance <= 80){
+        isColored = true;
+    }
+    else if(score >= 50 && coloredAppleChance <= 70){
+        isColored = true;
+    }
+    else if(score >= 25 && coloredAppleChance <= 60){
+        isColored = true;
+    }
+    else if(score >= 5 && coloredAppleChance <= 50){
+        isColored = true;
+    }
+
+     // spawn green apple 
+     if(isColored && whichApple == 1){
+        ctx.drawImage(apple3, food.x, food.y);
+        appleColor = "Lime";
+        appleColor2 = "GreenYellow"
+    }
+    // spawn purple apple
+    else if (isColored && whichApple == 2){
+       
+        ctx.drawImage(apple2, food.x, food.y);
+        appleColor = "Magenta";
+        appleColor2 = "Fuchsia"
+
+    }
+    // spawn blue apple
+    else if (isColored && whichApple == 3){
+        ctx.drawImage(apple4, food.x, food.y);
+        appleColor = "DeepSkyBlue";
+        appleColor2 = "DodgerBlue"
+
+    }
+    // spawn orange apple
+    else if (isColored && whichApple == 4){
+        ctx.drawImage(apple5, food.x, food.y);
+        appleColor = "OrangeRed";
+        appleColor2 = "#ff4000"
+
     }
     // draw regular apple
     else{
         ctx.drawImage(apple, food.x, food.y);
+        appleColor = "white";
+        appleColor2 = "white"
+        
     }
 
+        for(let i = 0; i < snake.length; i++){
+            ctx.fillStyle = (i == 0)? headColor : snakeColor;
+            ctx.fillRect(snake[i].x, snake[i].y, box, box);
+        
+            ctx.strokeStyle = "black";
+            ctx.strokeRect(snake[i].x, snake[i].y, box, box);
+        }
+    
 
     //old head position
     let snakeX = snake[0].x;
     let snakeY = snake[0].y;
-    
-    //play/ai radio buttons
-    // var playMode = document.getElementById("play");
-    // var aiMode = document.getElementById("ai");
 
     //enable arrow keys with play mode
     if(mode == 1){
@@ -251,7 +293,21 @@ if(mode == 3){
 
     fill(world, snake[0].x, snake[0].y, 0);
 
+    //check if the snake enclosed itself
+    var checkIfDead = 0;
+    for(var x = 0; x < 45*box; x+=box){
+        for(var y = 0; y < 30*box; y+=box){
+            if(world[x][y] == 0){
+                checkIfDead++;
+            }
+        }
+    }
+    if(checkIfDead == 1){
+        die.play();
+        clearInterval(game);
+    }
 
+    //255,105,180,.09
     //highlight selected path
     for(var x = 0; x < 45*box; x+=box){
         for(var y = 0; y < 30*box; y+=box){
@@ -263,7 +319,7 @@ if(mode == 3){
                     ctx.restore();
                 }
                 else if(world[x][y] == 0){
-                    ctx.fillStyle = 'rgba(255,255,51,0.2)';
+                    ctx.fillStyle = 'rgba(0,0,255,.09)';
                     ctx.fillRect(x, y, box, box);  
                     ctx.restore();
                 }
@@ -316,7 +372,7 @@ if(mode == 3){
 
     for(rp = 1; rp < currentPath.length; rp++){
         if(snakeVision.checked == true && world[food.x][food.y] != 3){
-                ctx.fillStyle = 'rgba(255,0,0,0.5)';
+                ctx.fillStyle = 'rgba(255,255,255,0.15)';
                 ctx.fillRect(currentPath[rp][0], currentPath[rp][1], box, box);
         }
 
@@ -484,18 +540,33 @@ if(mode == 3){
      // snake eats food
     if(snakeX == food.x && snakeY == food.y){
         score++;
-        //play sky music if 20 combo
-        if(score%20 == 0){
-             sky.play();
+        //red apple sound
+        if(appleColor == "OrangeRed"){
+            eat5.play();
         }
-        //play wocky if 8 combo
-        else if (score%8 == 0){
-             wocky.play();
+        //green apple sound
+        else if (appleColor == "Lime"){
+            eat4.play();
         }
+        //blue apple sound
+        else if (appleColor == "DeepSkyBlue"){
+            eat2.play();
+        }
+        //purple apple sound
+        else if (appleColor == "Magenta"){
+            eat3.play();
+        }
+        //white apple sound
         else{
-            eat.play();
+            eat1.play();
         }
+    
+
         spawnFood();
+        coloredAppleChance = Math.floor(Math.random()*100) + 1;
+        whichApple = Math.floor(Math.random()*4) + 1;
+        snakeColor = appleColor;
+        headColor = appleColor2;
         
     }
     else{
@@ -513,7 +584,7 @@ if(mode == 3){
 
     if(snakeX < 0 || snakeX >= 45 * box || snakeY >= 30 * box || snakeY < 0 || collision(newHead, snake)){
         clearInterval(game);
-        // die.play();
+        die.play();
     }
 
     snake.unshift(newHead);
@@ -569,6 +640,8 @@ function changeMode(){
 }
 
 function resetGame(){
+    snakeColor = "white";
+    headColor = "white";
     changeSpeed();
     changeMode();
     clearInterval(game);
@@ -585,4 +658,3 @@ function resetGame(){
     }
     game = setInterval(draw, speed);
 }
-
