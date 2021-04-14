@@ -4,6 +4,16 @@ const ctx = cvs.getContext("2d");
 const scoreboard = document.getElementById("scoreboard");
 const sb = scoreboard.getContext("2d");
 
+
+function openFullscreen(){
+    if(cvs.requestFullscreen){
+        cvs.requestFullscreen();
+    } else if(cvs.webkitRequestFullscreen){
+        cvs.webkitRequestFullscreen;
+    } else if(cvs.msRequestFullscreen){
+        cvs.msRequestFullscreen();
+    }
+}
 //make box
 const box = 32;
 
@@ -117,11 +127,16 @@ function collision(head, array){
     var appleColor = "white";
     var appleColor2 = "white";
 
+
+
 //draw to canvas
 function draw(){
 
     ctx.drawImage(board, 0, 0);
     ctx.lineWidth = 5;
+
+    ctx.strokeStyle = "white";
+    ctx.strokeRect(0, 0, 45*box, 30*box);
 
     isColored = false;
 
