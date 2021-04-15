@@ -53,6 +53,8 @@ eat4.src = "audio/eat4.mp3";
 eat5.src = "audio/eat5.mp3";
 die.src = "audio/die.mp3";
 
+//mute button
+var mute = document.getElementById("mute");
 
 
 eat1.volume = 0.3;
@@ -318,7 +320,7 @@ if(mode == 3){
         }
     }
     if(checkIfDead == 1){
-        die.play();
+        if(mute.checked == false) die.play();
         clearInterval(game);
     }
 
@@ -556,23 +558,23 @@ if(mode == 3){
     if(snakeX == food.x && snakeY == food.y){
         score++;
         //red apple sound
-        if(appleColor == "OrangeRed"){
+        if(appleColor == "OrangeRed" && mute.checked == false){
             eat5.play();
         }
         //green apple sound
-        else if (appleColor == "Lime"){
+        else if (appleColor == "Lime" && mute.checked == false){
             eat4.play();
         }
         //blue apple sound
-        else if (appleColor == "DeepSkyBlue"){
+        else if (appleColor == "DeepSkyBlue" && mute.checked == false){
             eat2.play();
         }
         //purple apple sound
-        else if (appleColor == "Magenta"){
+        else if (appleColor == "Magenta" && mute.checked == false){
             eat3.play();
         }
         //white apple sound
-        else{
+        else if(mute.checked == false){
             eat1.play();
         }
     
@@ -599,7 +601,7 @@ if(mode == 3){
 
     if(snakeX < 0 || snakeX >= 45 * box || snakeY >= 30 * box || snakeY < 0 || collision(newHead, snake)){
         clearInterval(game);
-        die.play();
+        if(mute.checked == false) die.play();
     }
 
     snake.unshift(newHead);
@@ -673,3 +675,4 @@ function resetGame(){
     }
     game = setInterval(draw, speed);
 }
+
