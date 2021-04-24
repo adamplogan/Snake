@@ -14,8 +14,17 @@ function openFullscreen(){
         cvs.msRequestFullscreen();
     }
 }
+
+let defaultSize = {
+    x : 45,
+    y : 30,
+    b : 32,
+    xh : 22,
+    yh : 15
+};
+
 //make box
-const box = 32;
+const box = defaultSize.b;
 
 //load images
 
@@ -68,29 +77,51 @@ die.volume = 0.3;
 
 let snake = [];
 
+let snakeTracks = [];
+
+var escapeStart = [(defaultSize.xh)*box, (defaultSize.yh)*box];
+
+var panic = false;
+
+var modeSwitch = false;
+
+var pathGone = false;
+
+var snakeOnLine = true;
+
+
 snake[0] = {
-    x : 22*box, 
-    y : 15*box
+    x : (defaultSize.xh)*box, 
+    y : (defaultSize.yh)*box
 };
+
+snakeTracks[0] = {
+    x : (defaultSize.xh)*box, 
+    y : (defaultSize.yh)*box
+};
+
+
 
 //make food
 
 let food = {
-     x : Math.floor(Math.random()*45)*box,
-     y : Math.floor(Math.random()*30)*box
+     x : Math.floor(Math.random()*(defaultSize.x))*box,
+     y : Math.floor(Math.random()*(defaultSize.y))*box
 };
 
 //create score
 let score = 0;
+let sum = 0;
 
 //snake play direction
 let d;
 
 //ai direction
 var current_direction;
+var directionPath = [];
 
 //get default mode
-var mode = 1;
+var mode = 0;
 
 //declare snake vision
 var snakeVision = document.getElementById("vision");
@@ -130,7 +161,6 @@ function collision(head, array){
     var appleColor2 = "white";
 
 
-
 //draw to canvas
 function draw(){
 
@@ -138,7 +168,7 @@ function draw(){
     ctx.lineWidth = 5;
 
     ctx.strokeStyle = "white";
-    ctx.strokeRect(0, 0, 45*box, 30*box);
+    ctx.strokeRect(0, 0, (defaultSize.x)*box, (defaultSize.y)*box);
 
     isColored = false;
 
@@ -210,8 +240,11 @@ function draw(){
     let snakeX = snake[0].x;
     let snakeY = snake[0].y;
 
+    let snakeTracksX = snakeTracks[0].x;
+    let snakeTracksY = snakeTracks[0].y;
+    
     //enable arrow keys with play mode
-    if(mode == 1){
+    if(mode == 0){
         d = direction;
         if(d == "LEFT") snakeX -= box;
         if(d == "UP") snakeY -= box;
@@ -220,7 +253,7 @@ function draw(){
     }
 
     //AI MODE 1
-    if(mode == 2){
+    if(mode == 1){
         //Left
         if(snakeX > food.x && current_direction != "RIGHT"){
             current_direction = "LEFT";
@@ -270,24 +303,32 @@ function draw(){
      }
     
 //A* Pathfinding Mode
-if(mode == 3){
+if(mode == 2 || mode == 3){
+
+    var reverse = false;
+
+    if(mode == 3 && score >= 1){
+        reverse = true;
+    }
 
     //make world
     var world = [[]];
 
 
-    //find open spots
-    for(var x = 0; x < 45*box; x+=box){
+    //find spots
+    for(var x = 0; x < (defaultSize.x)*box; x+=box){
         world[x] = [];
-        for(var y = 0; y < 30*box; y+=box){
+        for(var y = 0; y < (defaultSize.y)*box; y+=box){
             world[x][y] = 3;
         }
     }
-        
+
+
     //find closed spots
     for(var i = 1; i < snake.length; i++){
         world[snake[i].x][snake[i].y] = 1;
     }
+
     
     function fill(data, x, y, newValue){
         // get target value
@@ -295,7 +336,7 @@ if(mode == 3){
 
         function flow(x,y){
             // bounds check what we were passed
-            if( x >= 0 && x < 45*box && y >= 0 && y < 30*box){
+            if( x >= 0 && x < (defaultSize.x)*box && y >= 0 && y < (defaultSize.y)*box){
                 if(data[x][y] === target){
                     data[x][y] = newValue;
                     flow(x - box, y);
@@ -308,34 +349,133 @@ if(mode == 3){
         flow(x, y);
     }
 
+
+    //fill snake tracks
+    if (reverse){
+        for(var i = 1; i < snakeTracks.length; i++){
+            world[snakeTracks[i].x][snakeTracks[i].y] = 1;
+        }
+    }
+
+    // find open spots
     fill(world, snake[0].x, snake[0].y, 0);
+
+
+    //fill escape route
+     //escape route for snake
+     var escapeRoute = [];
+     var escapeEnd = [food.x, food.y];
+     var escapeFix = false;
+ 
+     if(reverse && score >= 1 && panic == false && world[food.x][food.y] == 0){
+         reverse = false;
+         escapeFix = true;
+ 
+            
+            escapeRoute = findPath(world, escapeStart, escapeEnd);
+
+            for(var i = 1; i < escapeRoute.length - 1; i++){
+
+                if(snakeX == escapeRoute[i][0] && snakeY == escapeRoute[i][1]){
+                    snakeOnLine = true;
+                    break;
+                }
+            
+            }
+
+            //score <= 100 ||
+
+            if(snake[snake.length - 1].x == escapeRoute[0][0] && snake[snake.length - 1].y == escapeRoute[0][1] && (score <= 50 || pathGone == true)){
+                modeSwitch = true;
+            }
+            
+            for(var i = 1; i < escapeRoute.length - 1; i++){
+
+                if(pathGone == false && !snakeOnLine){
+                    world[escapeRoute[i][0]][escapeRoute[i][1]] = 1;
+                }
+                if(snakeVision.checked == true){
+                    ctx.fillStyle = 'rgba(0,0,0,.05)';
+                    ctx.fillRect(escapeRoute[i][0], escapeRoute[i][1], box, box);
+                }
+            }
+
+
+            fill(world, snake[0].x, snake[0].y, 7);
+
+
+            if(world[food.x][food.y] != 7){
+                for(var i = 1; i < escapeRoute.length - 1; i++){
+                    world[escapeRoute[i][0]][escapeRoute[i][1]] = 0;
+                    pathGone = true;
+                }
+            }
+
+            else if(!snakeOnLine && world[food.x][food.y] == 7){
+                pathGone = false;
+            }
+
+            for(var x = 0; x < (defaultSize.x)*box; x+=box){
+                for(var y = 0; y < (defaultSize.y)*box; y+=box){
+                    if(world[x][y] == 7){
+                        world[x][y] = 0;
+                    }
+                }
+            } 
+
+
+         
+         snakeOnLine = false;
+         escapeFix = false;
+         reverse = true;
+     }
+
+     for(var i = 1; i < snake.length; i++){
+        world[snake[i].x][snake[i].y] = 1;
+    }
+
+    if(world[food.x][food.y] != 0){
+        modeSwitch == true;
+    }
+    if(modeSwitch == true){
+
+
+        for(var i = 0; i < escapeRoute.length; i++){
+            world[escapeRoute[i][0]][escapeRoute[i][1]] = 0;
+        }
+        for(var i = 1; i < snake.length; i++){
+            world[snake[i].x][snake[i].y] = 1;
+        }
+
+
+        mode = 2;
+    }
+
 
     //check if the snake enclosed itself
     var checkIfDead = 0;
-    for(var x = 0; x < 45*box; x+=box){
-        for(var y = 0; y < 30*box; y+=box){
+    for(var x = 0; x < (defaultSize.x)*box; x+=box){
+        for(var y = 0; y < (defaultSize.y)*box; y+=box){
             if(world[x][y] == 0){
                 checkIfDead++;
             }
         }
     }
     if(checkIfDead == 1){
+        
+
         if(mute.checked == false) die.play();
         clearInterval(game);
+        //resetGame();
     }
 
     //255,105,180,.09
     //highlight selected path
-    for(var x = 0; x < 45*box; x+=box){
-        for(var y = 0; y < 30*box; y+=box){
+    for(var x = 0; x < (defaultSize.x)*box; x+=box){
+        for(var y = 0; y < (defaultSize.y)*box; y+=box){
             if(snakeVision.checked == true){
                 world[snake[0].x][snake[0].y] = 4;
-                if(world[x][y] == 0 && world[food.x][food.y] == 3){
-                    ctx.fillStyle = 'rgba(255,0,0,0.5)';
-                    ctx.fillRect(x, y, box, box);  
-                    ctx.restore();
-                }
-                else if(world[x][y] == 0){
+                if(world[x][y] == 0){
                     ctx.fillStyle = 'rgba(0,0,255,.09)';
                     ctx.fillRect(x, y, box, box);  
                     ctx.restore();
@@ -348,24 +488,32 @@ if(mode == 3){
             }
         }
     }
+
     world[snake[0].x][snake[0].y] = 0;
+    world[snakeTracks[0].x][snakeTracks[0].y] = 0;
+
     //start of path
     var pathStart = [snake[0].x, snake[0].y];
 
     //end of path
     if(world[food.x][food.y] == 0){
+        panic = false;
         var pathEnd = [food.x, food.y];
     }
-    else{
 
+    //old panic mode
+    else {
+
+
+        panic = true;
         var randomVisiblePoint = {
-            x : Math.floor(Math.random()*45)*box,
-            y : Math.floor(Math.random()*30)*box
+            x : Math.floor(Math.random()*(defaultSize.x))*box,
+            y : Math.floor(Math.random()*(defaultSize.y))*box
         }
 
         while(world[randomVisiblePoint.x][randomVisiblePoint.y] != 0){
-            randomVisiblePoint.x = Math.floor(Math.random()*45)*box;
-            randomVisiblePoint.y = Math.floor(Math.random()*30)*box;
+            randomVisiblePoint.x = Math.floor(Math.random()*(defaultSize.x))*box;
+            randomVisiblePoint.y = Math.floor(Math.random()*(defaultSize.y))*box;
         }
 
         var pathEnd = [randomVisiblePoint.x, randomVisiblePoint.y];
@@ -383,156 +531,386 @@ if(mode == 3){
             currentPath = findPath(world, pathStart, pathEnd);
         }
     }
-    if (currentPath.length == 0){
-        snakeY -= box;
-    }
+
 
     for(rp = 1; rp < currentPath.length; rp++){
-        if(snakeVision.checked == true && world[food.x][food.y] != 3){
+        if(snakeVision.checked == true){
                 ctx.fillStyle = 'rgba(255,255,255,0.15)';
                 ctx.fillRect(currentPath[rp][0], currentPath[rp][1], box, box);
         }
-
     }
 
-    //UP
-    if(currentPath[1][1] < snake[0].y && currentPath[1][0] == snake[0].x){
-    snakeY -= box;
-    }
-    //DOWN
-    if(currentPath[1][1] > snake[0].y && currentPath[1][0] == snake[0].x){
-    snakeY += box;
-    }
-    //RIGHT
-    if(currentPath[1][1] == snake[0].y && currentPath[1][0] > snake[0].x){
-    snakeX += box;
-    }
-    //LEFT
-    if(currentPath[1][1] == snake[0].y && currentPath[1][0] < snake[0].x){
-    snakeX -= box;
-    }
+
+    
+        //UP
+        if(currentPath[1][1] < snake[0].y && currentPath[1][0] == snake[0].x){
+        snakeY -= box;
+        snakeTracksY -= box;
+        current_direction = "up";
+        }
+        //DOWN
+        if(currentPath[1][1] > snake[0].y && currentPath[1][0] == snake[0].x){
+        snakeY += box;
+        snakeTracksY += box;
+        current_direction = "down";
+        }
+        //RIGHT
+        if(currentPath[1][1] == snake[0].y && currentPath[1][0] > snake[0].x){
+        snakeX += box;
+        snakeTracksX += box;
+        current_direction = "right";
+    
+        }
+        //LEFT
+        if(currentPath[1][1] == snake[0].y && currentPath[1][0] < snake[0].x){
+        snakeX -= box;
+        snakeTracksX -= box;
+        current_direction = "left";
+        }
     
     function findPath(world, pathStart, pathEnd){
-    // math short cuts
-    var abs = Math.abs;
+        // math short cuts
+        var abs = Math.abs;
+        var max = Math.max;
+        var pow = Math.pow;
+        var sqrt = Math.sqrt;
 
-    // max number of traverses
-    var maxTraversable = 0;
+        // max traverses
+        var maxTraversable = 0;
 
-    //dimensions;
-    var worldWidth = 45*box;
-    var worldHeight = 30*box;
-    var worldSize = worldWidth * worldHeight;
-    
-    var distance = ManhattanDistance;
-    var findNeighbours = function(){};
-
-    //mathattan distance formula
-    function ManhattanDistance(point, goal){
-        return abs(point.x - goal.x) + abs(point.y - goal.y);
-    }
-    
-    function Neighbours(x, y){
-        var N = y - box, S = y + box, E = x + box, W = x - box,
-
-        myN = N > -box && canWalkHere(x,N),
-        myS = S < worldHeight && canWalkHere(x,S),
-        myE = E < worldWidth && canWalkHere(E,y),
-        myW = W > -box && canWalkHere(W,y),
-
-        result = [];
-        if(myN)
-        result.push({x:x, y:N});
+        //dimensions;
+        var worldWidth = (defaultSize.x)*box;
+        var worldHeight = (defaultSize.y)*box;
+        var worldSize = worldWidth * worldHeight;
         
-        if(myE)
-        result.push({x:E, y:y});
+        var distance;
+
+        if(reverse){
+            distance = EuclideanDistance;
+        }
+        else{
+            distance = ManhattanDistance;
+        }
+
+        var findNeighbours = function(){};
+
+        //mathattan distance formula
+        function ManhattanDistance(point, goal){
+            return abs(point.x - goal.x) + abs(point.y - goal.y);
+        }
+
+        //euclidean distance
+        function EuclideanDistance(point, goal){
+            return sqrt(pow(point.x - goal.x, 2) + pow(point.y - goal.y, 2));
+        }
+
+
         
-        if(myS)
-        result.push({x:x, y:S});
+        function Neighbours(x, y){
+            var N = y - box, S = y + box, E = x + box, W = x - box,
+
+            myN = N > -box && canWalkHere(x,N),
+            myS = S < worldHeight && canWalkHere(x,S),
+            myE = E < worldWidth && canWalkHere(E,y),
+            myW = W > -box && canWalkHere(W,y),
+
+            result = [];
+            if(myN)
+            result.push({x:x, y:N});
+            
+            if(myE)
+            result.push({x:E, y:y});
+            
+            if(myS)
+            result.push({x:x, y:S});
+            
+            if(myW)
+            result.push({x:W, y:y});
         
-        if(myW)
-        result.push({x:W, y:y});
-    
-        findNeighbours(myN, myS, myE, myW, N, S, E, W, result);
-        return result;
-        
-    }
-    function canWalkHere(x, y){
-        return ((world[x] != null) && (world[x][y] != null) && (world[x][y] <= maxTraversable));
-    };
-    function Node(parent, point){
-        var newNode = {
-            parent: parent,
-            value: point.x + (point.y * worldWidth),
-            x:point.x, 
-            y:point.y,
-            f:0,
-            g:0
-        };
-        return newNode;
-    };
-    function calculatePath(){
-        var myPathStart = Node(null,{x:pathStart[0], y:pathStart[1]});
-        var myPathEnd = Node(null, {x:pathEnd[0], y:pathEnd[1]});
-
-        var AStar = new Array(worldSize);
-
-        var Open = [myPathStart];
-
-        var Closed = [];
-
-        var result = [];
-
-        var myNeighbours;
-
-        var myNode;
-
-        var myPath;
-
-        var length, max, min, i, j;
-
-
-        while(length = Open.length){
-            max = worldSize;
-            min = -1;
-            for(i = 0; i < length; i++){
-                if(Open[i].f < max){
-                    max = Open[i].f;
-                    min = i;
-                }
-                
+            findNeighbours(myN, myS, myE, myW, N, S, E, W, result);
+            return result;
+            
+        }
+        function canWalkHere(x, y){
+            if(escapeFix == false){
+                return ((world[x] != null) && (world[x][y] != null) && (world[x][y] <= maxTraversable));
             }
-            myNode =  Open.splice(min, 1)[0];
-
-            if(myNode.value === myPathEnd.value){
-                myPath = Closed[Closed.push(myNode) - 1];
-                do{
-                    result.push([myPath.x, myPath.y]);
-                }
-                while(myPath = myPath.parent);
-                AStar = Closed = Open = [];
-                result.reverse();
-            }
-
             else{
-                myNeighbours = Neighbours(myNode.x, myNode.y);
-                for(i = 0, j = myNeighbours.length; i < j; i++){
-                    myPath = Node(myNode, myNeighbours[i]);
-                    if(!AStar[myPath.value]){
-                        myPath.g = myNode.g + distance(myNeighbours[i], myNode);
-                        myPath.f = myPath.g + distance(myNeighbours[i], myPathEnd);
-                            Open.push(myPath);
-                        AStar[myPath.value] = true;
+                return ((world[x] != null) && (world[x][y] != null) && (world[x][y] <= 3));
+            }
+        
+        };
+        function Node(parent, point){
+            var newNode = {
+                parent: parent,
+                value: point.x + (point.y * worldWidth),
+                x:point.x, 
+                y:point.y,
+                f:0,
+                g:0
+            };
+            return newNode;
+        };
+        function calculatePath(){
+            var myPathStart = Node(null,{x:pathStart[0], y:pathStart[1]});
+            var myPathEnd = Node(null, {x:pathEnd[0], y:pathEnd[1]});
+
+            var AStar = new Array(worldSize);
+
+            var Open = [myPathStart];
+
+            var Closed = [];
+
+            var result = [];
+
+            var myNeighbours;
+
+            var myNode;
+
+            var myPath;
+
+            var length, max, min, i, j;
+
+
+            while(length = Open.length){
+                max = worldSize;
+                min = -1;
+
+                for(i = 0; i < length; i++){
+                    if(reverse){
+                        if(Open[i].f > min){
+
+                            min = Open[i].f;
+                            
+                            max = i;    
+        
+                        }
+                    } 
+                    else{
+                        if(Open[i].f < max){
+
+                            max = Open[i].f;
+                            
+                            min = i;
+                        }
                     }
                 }
-                Closed.push(myNode);
+            
+                if(reverse){
+                    myNode =  Open.splice(max, 1)[0];
+                }
+                else{
+                    myNode =  Open.splice(min, 1)[0];
+                }
+
+                if(myNode.value === myPathEnd.value){
+                    myPath = Closed[Closed.push(myNode) - 1];
+                    do{
+                        result.push([myPath.x, myPath.y]);
+                    }
+                    while(myPath = myPath.parent);
+                    AStar = Closed = Open = [];
+                    result.reverse();
+                }
+
+                else{
+                    myNeighbours = Neighbours(myNode.x, myNode.y);
+                    for(i = 0, j = myNeighbours.length; i < j; i++){
+                        myPath = Node(myNode, myNeighbours[i]);
+                        if(!AStar[myPath.value]){
+                            myPath.g = myNode.g + distance(myNeighbours[i], myNode);
+                            myPath.f = myPath.g + distance(myNeighbours[i], myPathEnd);
+                                Open.push(myPath);
+                            AStar[myPath.value] = true;
+                        }
+                    }
+                    Closed.push(myNode);
+                }
             }
+            return result;
         }
-        return result;
-    }
-    return calculatePath();
-    }
+        return calculatePath();
+        }
         
+    }
+//Hamiltonian Cycle
+if(mode == 4){
+    //make world
+    var world = [[]];
+
+    var cycle = [];
+
+    for(var x = 0; x <= 1349; x++){
+        cycle.push(x);
+    }
+
+    var hamCycle = [];
+    var cycleStart = [22*box, 17*box];
+    var cycleEnd = [22*box, 15*box];
+
+    for(var x = 0; x < (defaultSize.x)*box; x+=box){
+        world[x] = [];
+        for(var y = 0; y < (defaultSize.y)*box; y+=box){
+            world[x][y] = 0;
+        }
+    }
+    while(hamCycle.length == 0){
+        if(world[cycleStart[0]][cycleStart[1]] == 0){
+            hamCycle = findPath(world, cycleStart, cycleEnd);
+        }
+    }
+    for(rp = 0; rp < hamCycle.length; rp++){
+        if(snakeVision.checked == true){
+                //ctx.fillStyle = 'rgba(255,255,255,0.15)';
+                //ctx.fillRect(hamCycle[rp][0], hamCycle[rp][1], box, box);
+        }
+    }
+
+    if(sum == 1350){
+        sum = 0;
+    }
+
+    snakeX = hamCycle[sum][0];
+    snakeY = hamCycle[sum][1];
+    sum++;
+
+    
+    
+
+    function findPath(world, pathStart, pathEnd){
+        // math short cuts
+        var abs = Math.abs;
+        var max = Math.max;
+        var pow = Math.pow;
+        var sqrt = Math.sqrt;
+
+        // max traverses
+        var maxTraversable = 0;
+
+        //dimensions;
+        var worldWidth = (45)*box;
+        var worldHeight = (30)*box;
+        var worldSize = (45)*box * (30)*box;
+        
+    
+        var distance = EuclideanDistance;
+
+        var findNeighbours = function(){};
+
+        //mathattan distance formula
+        function DiagonalDistance(point, goal){
+            return max(abs(point.x - goal.x), abs(point.y - goal.y));
+        }
+
+        //euclidean distance
+        function EuclideanDistance(point, goal){
+            return sqrt(pow(point.x - goal.x, 2) + pow(point.y - goal.y, 2));
+        }
+
+
+        
+        function Neighbours(x, y){
+            var N = y - box, S = y + box, E = x + box, W = x - box,
+
+            myN = N > -box && canWalkHere(x,N),
+            myS = S < worldHeight && canWalkHere(x,S),
+            myE = E < worldWidth && canWalkHere(E,y),
+            myW = W > -box && canWalkHere(W,y),
+
+            result = [];
+            if(myN)
+            result.push({x:x, y:N});
+            
+            if(myE)
+            result.push({x:E, y:y});
+            
+            if(myS)
+            result.push({x:x, y:S});
+            
+            if(myW)
+            result.push({x:W, y:y});
+        
+            findNeighbours(myN, myS, myE, myW, N, S, E, W, result);
+            return result;
+            
+        }
+        
+        function canWalkHere(x, y){
+            
+                return ((world[x] != null) && (world[x][y] != null) && (world[x][y] <= maxTraversable));
+            
+        
+        };
+        function Node(parent, point){
+            var newNode = {
+                parent: parent,
+                value: point.x + (point.y * worldWidth),
+                x:point.x, 
+                y:point.y,
+                f:0,
+                g:0
+            };
+            return newNode;
+        };
+        function calculatePath(){
+            var myPathStart = Node(null,{x:pathStart[0], y:pathStart[1]});
+            var myPathEnd = Node(null, {x:pathEnd[0], y:pathEnd[1]});
+
+            var AStar = new Array(worldSize);
+
+            var Open = [myPathStart];
+
+            var Closed = [];
+
+            var result = [];
+
+            var myNeighbours;
+
+            var myNode;
+
+            var myPath;
+
+            var length, max, min, i, j;
+
+            // Structure Hamiltonian Cycle Manually
+            for(var i = 21; i > 0; i--){
+                result.push([i*box, 15*box]);
+            }
+            for(var i = 16; i < 30; i++){
+                if(i % 2 == 0){
+                    for(var j = 1; j < 45; j++){
+                        result.push([j*box, i*box]);
+                    }
+                }
+                else{
+                    for(var k = 44; k > 0; k--){
+                        result.push([k*box, i*box]);
+                    }
+                }
+            }
+            for(var i = 29; i >= 0; i--){
+                result.push([0*box, i*box]);
+            }
+            for(var i = 0; i < 15; i++){
+                if(i % 2 == 0){
+                    for(var j = 1; j < 45; j++){
+                        result.push([j*box, i*box]);
+                    }
+                }
+                else{
+                    for(var k = 44; k > 0; k--){
+                        result.push([k*box, i*box]);
+                    }
+                }
+            }
+            for(var i = 44; i > 21; i--){
+                result.push([i*box, 15*box]);
+            }
+            
+            return result;
+        }
+        return calculatePath();
+        }
 }
 
      // a function to spawn food
@@ -542,8 +920,8 @@ if(mode == 3){
 
         // spawn food randomly
         food = {
-            x : Math.floor(Math.random()*45)*box,
-            y : Math.floor(Math.random()*30)*box
+            x : Math.floor(Math.random()*(defaultSize.x))*box,
+            y : Math.floor(Math.random()*(defaultSize.y))*box
         }
 
         // if food spawns on snake keep respawning until it is no longer on the snake
@@ -577,7 +955,20 @@ if(mode == 3){
         else if(mute.checked == false){
             eat1.play();
         }
-    
+
+        pathGone = false;
+
+        if(modeSwitch == true){
+            mode = 3;
+            modeSwitch = false;
+        }
+
+        snakeTracks = [];
+        escapeRoute = [];
+
+        
+        escapeStart = escapeEnd;
+       
 
         spawnFood();
         coloredAppleChance = Math.floor(Math.random()*100) + 1;
@@ -588,6 +979,7 @@ if(mode == 3){
     }
     else{
         snake.pop(); //remove tail 
+        // snakeTracks.pop();
     }
 
     // add head
@@ -597,14 +989,20 @@ if(mode == 3){
         y : snakeY
     }
 
+    let newHead2 = {
+        x : snakeTracksX,
+        y : snakeTracksY
+    }
     // end game
 
-    if(snakeX < 0 || snakeX >= 45 * box || snakeY >= 30 * box || snakeY < 0 || collision(newHead, snake)){
+    if(snakeX < 0 || snakeX >= (defaultSize.x) * box || snakeY >= (defaultSize.y) * box || snakeY < 0 || collision(newHead, snake)){
         clearInterval(game);
+
         if(mute.checked == false) die.play();
     }
 
     snake.unshift(newHead);
+    snakeTracks.unshift(newHead2);
 
     //scoreboard
     sb.fillStyle = "black";
@@ -617,6 +1015,7 @@ if(mode == 3){
 
  }
 
+
 //call draw function
 let game = setInterval(draw, 65);
 
@@ -627,17 +1026,31 @@ var ultraSpeed = document.getElementById("ultra")
 var playMode = document.getElementById("play");
 var aiMode = document.getElementById("ai");
 var aiMode2 = document.getElementById("ai2");
+var aiMode3 = document.getElementById("ai3");
+var aiMode4 = document.getElementById("ai4");
 
 function changeSpeed(){
 
-    if(defaultSpeed.checked == true){
+    if(defaultSpeed.checked == true && (aiMode3.checked == true || aiMode4.checked == true)){
+        speed = 15;
+    }
+    else if(defaultSpeed.checked == true){
         speed = 65;
+    }
+    else if(slowSpeed.checked == true && (aiMode3.checked == true || aiMode4.checked == true)){
+        speed = 30;
     }
     else if(slowSpeed.checked == true){
         speed = 110;
     }
+    else if(fastSpeed.checked == true && (aiMode3.checked == true || aiMode4.checked == true)){
+        speed = 10;
+    }
     else if(fastSpeed.checked == true){
         speed = 35;
+    }
+    else if(ultraSpeed.checked == true && (aiMode3.checked == true || aiMode4.checked == true)){
+        speed = .0001;
     }
     else if(ultraSpeed.checked == true){
         speed = 15;
@@ -646,33 +1059,49 @@ function changeSpeed(){
 
 function changeMode(){
     if(playMode.checked == true){
-        mode = 1;
+        mode = 0;
     }
     else if(aiMode.checked == true){
-        mode = 2;
+        mode = 1;
     }
     else if(aiMode2.checked == true){
+        mode = 2;
+    }
+    else if(aiMode3.checked == true){
         mode = 3;
+    }
+    else if(aiMode4.checked == true){
+        mode = 4;
     }
 }
 
 function resetGame(){
+    sum = 0;
     snakeColor = "white";
     headColor = "white";
+    panic = false;
     changeSpeed();
     changeMode();
     clearInterval(game);
     score = 0;
     direction = 0;
     snake.length = 1;
+
+    if(aiMode2.checked == true || aiMode3.checked == true){
+        
+        snakeTracks.length = 1;
+        snakeTracks[0] = {
+            x : (defaultSize.xh)*box,
+            y : (defaultSize.yh)*box
+        };
+    }
     snake[0] = {
-        x : 22*box, 
-        y : 15*box
+        x : (defaultSize.xh)*box, 
+        y : (defaultSize.yh)*box
     };
     food = {
-        x : Math.floor(Math.random()*45)*box,
-        y : Math.floor(Math.random()*30)*box
+        x : Math.floor(Math.random()*(defaultSize.x))*box,
+        y : Math.floor(Math.random()*(defaultSize.y))*box
     }
     game = setInterval(draw, speed);
 }
-
