@@ -1086,6 +1086,7 @@ function resetGame(){
     score = 0;
     direction = 0;
     snake.length = 1;
+    modeSwitch = false;
 
     if(aiMode2.checked == true || aiMode3.checked == true){
         
