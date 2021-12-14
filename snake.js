@@ -842,68 +842,78 @@ if(mode == 2 || mode == 3){
 if(mode == 4){
 
     if(score == 327){
-        for(var y = 0; y < (defaultSize.y); y++){
-            for(var x = 0; x < (defaultSize.x); x++){
-                for(var i = 0; i < snake.length - 1; i++){
-                    if(snake[i].x/box == x && snake[i].y/box == y && i != 0){
-                        if(x + 1 != snake[i+1].x/box && x + 1 != snake[i-1].x/box){
-                            ctx.beginPath();
-                            ctx.strokeStyle = "black";
-                            ctx.lineWidth = lineWidth;
-                            ctx.moveTo(x*box + box, y*box);
-                            ctx.lineTo(x*box + box, (y+1)*box);
-                            ctx.stroke();
-                        }
-                        if(y + 1 != snake[i+1].y/box && y + 1 != snake[i-1].y/box){
-                            ctx.beginPath();
-                            ctx.strokeStyle = "black";
-                            ctx.lineWidth = lineWidth;
-                            ctx.moveTo(x*box, y*box + box);
-                            ctx.lineTo((x+1)*box, y*box + box);
-                            ctx.stroke();
-                        }
+        for(var x = 0; x < (defaultSize.x); x++){
+            for(var y = 0; y < (defaultSize.y); y++){
+                for(var x = 0; x < (defaultSize.x); x++){
+                    for(var y = 0; y < (defaultSize.y); y++){
+                        ctx.fillStyle = (i == 0)? headColor : snakeColor;
+                        ctx.fillRect(x*box, y*box, box, box);
                     }
-                    //create correct line for snake head
-                    if(x == snake[0].x/box && y == snake[0].y/box && i == 0){
-                        if(x + 1 != snake[i+1].x/box){
-                            ctx.beginPath();
-                            ctx.strokeStyle = "black";
-                            ctx.lineWidth = lineWidth;
-                            ctx.moveTo(x*box + box, y*box);
-                            ctx.lineTo(x*box + box, (y+1)*box);
-                            ctx.stroke();
-                        }
-                        if(y + 1 != snake[i+1].y/box){
-                            ctx.beginPath();
-                            ctx.strokeStyle = "black";
-                            ctx.lineWidth = lineWidth;
-                            ctx.moveTo(x*box, y*box + box);
-                            ctx.lineTo((x+1)*box, y*box + box);
-                            ctx.stroke();
-                        }
-                    }
-                    //create correct line for the snake tail
-                    if(snake.length > 1 && x == snake[snake.length - 1].x/box && y == snake[snake.length - 1].y/box){
-                        if(x + 1 != snake[snake.length - 2].x/box){
-                            ctx.beginPath();
-                            ctx.strokeStyle = "black";
-                            ctx.lineWidth = lineWidth;
-                            ctx.moveTo(x*box + box, y*box);
-                            ctx.lineTo(x*box + box, (y+1)*box);
-                            ctx.stroke();
-                        }
-                        if(y + 1 != snake[snake.length - 2].y/box){
-                            ctx.beginPath();
-                            ctx.strokeStyle = "black";
-                            ctx.lineWidth = lineWidth;
-                            ctx.moveTo(x*box, y*box + box);
-                            ctx.lineTo((x+1)*box, y*box + box);
-                            ctx.stroke();
-                        }
-                    }
-                    
                 }
-
+                for(var y = 0; y < (defaultSize.y); y++){
+                    for(var x = 0; x < (defaultSize.x); x++){
+                        for(var i = 0; i < snake.length - 1; i++){
+                            if(snake[i].x/box == x && snake[i].y/box == y && i != 0){
+                                if(x + 1 != snake[i+1].x/box && x + 1 != snake[i-1].x/box){
+                                    ctx.beginPath();
+                                    ctx.strokeStyle = "black";
+                                    ctx.lineWidth = lineWidth;
+                                    ctx.moveTo(x*box + box, y*box);
+                                    ctx.lineTo(x*box + box, (y+1)*box);
+                                    ctx.stroke();
+                                }
+                                if(y + 1 != snake[i+1].y/box && y + 1 != snake[i-1].y/box){
+                                    ctx.beginPath();
+                                    ctx.strokeStyle = "black";
+                                    ctx.lineWidth = lineWidth;
+                                    ctx.moveTo(x*box, y*box + box);
+                                    ctx.lineTo((x+1)*box, y*box + box);
+                                    ctx.stroke();
+                                }
+                            }
+                            //create correct line for snake head
+                            if(x == snake[0].x/box && y == snake[0].y/box && i == 0){
+                                if(x + 1 != snake[i+1].x/box){
+                                    ctx.beginPath();
+                                    ctx.strokeStyle = "black";
+                                    ctx.lineWidth = lineWidth;
+                                    ctx.moveTo(x*box + box, y*box);
+                                    ctx.lineTo(x*box + box, (y+1)*box);
+                                    ctx.stroke();
+                                }
+                                if(y + 1 != snake[i+1].y/box){
+                                    ctx.beginPath();
+                                    ctx.strokeStyle = "black";
+                                    ctx.lineWidth = lineWidth;
+                                    ctx.moveTo(x*box, y*box + box);
+                                    ctx.lineTo((x+1)*box, y*box + box);
+                                    ctx.stroke();
+                                }
+                            }
+                            //create correct line for the snake tail
+                            if(snake.length > 1 && x == snake[snake.length - 1].x/box && y == snake[snake.length - 1].y/box){
+                                if(x + 1 != snake[snake.length - 2].x/box){
+                                    ctx.beginPath();
+                                    ctx.strokeStyle = "black";
+                                    ctx.lineWidth = lineWidth;
+                                    ctx.moveTo(x*box + box, y*box);
+                                    ctx.lineTo(x*box + box, (y+1)*box);
+                                    ctx.stroke();
+                                }
+                                if(y + 1 != snake[snake.length - 2].y/box){
+                                    ctx.beginPath();
+                                    ctx.strokeStyle = "black";
+                                    ctx.lineWidth = lineWidth;
+                                    ctx.moveTo(x*box, y*box + box);
+                                    ctx.lineTo((x+1)*box, y*box + box);
+                                    ctx.stroke();
+                                }
+                            }
+                            
+                        }
+        
+                    }
+                }
             }
         }
         max = true;
@@ -1553,3 +1563,4 @@ function resetGame(){
     }
     game = setInterval(draw, speed);
 }
+
