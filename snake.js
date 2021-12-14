@@ -93,6 +93,8 @@ var hamilton = true;
 
 var max = false;
 
+var lineWidth = 4;
+
 
 
 snake[0] = {
@@ -148,42 +150,6 @@ function direction(event){
     }
 }
 
-var hamCycle = [];
-
-// Structure Hamiltonian Cycle Manually
-for(var i = 21; i > 0; i--){
-    hamCycle.push([i*box, 15*box]);
-}
-for(var i = 16; i < 30; i++){
-    if(i % 2 == 0){
-        for(var j = 1; j < 45; j++){
-            hamCycle.push([j*box, i*box]);
-        }
-    }
-    else{
-        for(var k = 44; k > 0; k--){
-            hamCycle.push([k*box, i*box]);
-        }
-    }
-}
-for(var i = 29; i >= 0; i--){
-    hamCycle.push([0*box, i*box]);
-}
-for(var i = 0; i < 15; i++){
-    if(i % 2 == 0){
-        for(var j = 1; j < 45; j++){
-            hamCycle.push([j*box, i*box]);
-        }
-    }
-    else{
-        for(var k = 44; k > 0; k--){
-            hamCycle.push([k*box, i*box]);
-        }
-    }
-}
-for(var i = 44; i > 21; i--){
-    hamCycle.push([i*box, 15*box]);
-}
 var hamCycle2 = [];
 var hamCycle2Nums = [[251, 250, 249, 242, 241, 236, 235, 234, 227, 226, 223, 222, 191, 190, 181, 180, 177, 176, 161, 160, 149, 148],
                     [252, 247, 248, 243, 240, 237, 232, 233, 228, 225, 224, 221, 192, 189, 182, 179, 178, 175, 162, 159, 150, 147],
@@ -237,8 +203,8 @@ function draw(){
     ctx.drawImage(board, 0, 0);
     ctx.lineWidth = 5;
 
-    ctx.strokeStyle = "white";
-    ctx.strokeRect(0, 0, (defaultSize.x)*box, (defaultSize.y)*box);
+    // ctx.strokeStyle = "white";
+    // ctx.strokeRect(0, 0, (defaultSize.x)*box, (defaultSize.y)*box);
 
     isColored = false;
 
@@ -303,11 +269,78 @@ function draw(){
             ctx.fillStyle = (i == 0)? headColor : snakeColor;
             ctx.fillRect(snake[i].x, snake[i].y, box, box);
         
-            ctx.strokeStyle = "black";
-            ctx.strokeRect(snake[i].x, snake[i].y, box, box);
+            // ctx.strokeStyle = "black";
+            // ctx.strokeRect(snake[i].x, snake[i].y, box, box);
+
 
         }
-    
+        // create lines for snake body
+        for(var y = 0; y < (defaultSize.y); y++){
+            for(var x = 0; x < (defaultSize.x); x++){
+                for(var i = 0; i < snake.length - 1; i++){
+                    if(snake[i].x/box == x && snake[i].y/box == y && i != 0){
+                        if(x + 1 != snake[i+1].x/box && x + 1 != snake[i-1].x/box){
+                            ctx.beginPath();
+                            ctx.strokeStyle = "black";
+                            ctx.lineWidth = lineWidth;
+                            ctx.moveTo(x*box + box, y*box);
+                            ctx.lineTo(x*box + box, (y+1)*box);
+                            ctx.stroke();
+                        }
+                        if(y + 1 != snake[i+1].y/box && y + 1 != snake[i-1].y/box){
+                            ctx.beginPath();
+                            ctx.strokeStyle = "black";
+                            ctx.lineWidth = lineWidth;
+                            ctx.moveTo(x*box, y*box + box);
+                            ctx.lineTo((x+1)*box, y*box + box);
+                            ctx.stroke();
+                        }
+                    }
+                    //create correct line for snake head
+                    if(x == snake[0].x/box && y == snake[0].y/box && i == 0){
+                        if(x + 1 != snake[i+1].x/box){
+                            ctx.beginPath();
+                            ctx.strokeStyle = "black";
+                            ctx.lineWidth = lineWidth;
+                            ctx.moveTo(x*box + box, y*box);
+                            ctx.lineTo(x*box + box, (y+1)*box);
+                            ctx.stroke();
+                        }
+                        if(y + 1 != snake[i+1].y/box){
+                            ctx.beginPath();
+                            ctx.strokeStyle = "black";
+                            ctx.lineWidth = lineWidth;
+                            ctx.moveTo(x*box, y*box + box);
+                            ctx.lineTo((x+1)*box, y*box + box);
+                            ctx.stroke();
+                        }
+                    }
+                    //create correct line for the snake tail
+                    if(snake.length > 1 && x == snake[snake.length - 1].x/box && y == snake[snake.length - 1].y/box){
+                        if(x + 1 != snake[snake.length - 2].x/box){
+                            ctx.beginPath();
+                            ctx.strokeStyle = "black";
+                            ctx.lineWidth = lineWidth;
+                            ctx.moveTo(x*box + box, y*box);
+                            ctx.lineTo(x*box + box, (y+1)*box);
+                            ctx.stroke();
+                        }
+                        if(y + 1 != snake[snake.length - 2].y/box){
+                            ctx.beginPath();
+                            ctx.strokeStyle = "black";
+                            ctx.lineWidth = lineWidth;
+                            ctx.moveTo(x*box, y*box + box);
+                            ctx.lineTo((x+1)*box, y*box + box);
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+        }
+
+        ctx.strokeStyle = snakeColor;
+        ctx.lineWidth = 5;
+        ctx.strokeRect(0, 0, (defaultSize.x)*box, (defaultSize.y)*box);
 
     //old head position
     let snakeX = snake[0].x;
@@ -839,9 +872,70 @@ if(mode == 5){
             for(var y = 0; y < (defaultSize.y); y++){
                 ctx.fillStyle = (i == 0)? headColor : snakeColor;
                 ctx.fillRect(x*box, y*box, box, box);
-            
-                ctx.strokeStyle = "black";
-                ctx.strokeRect(x*box, y*box, box, box);
+            }
+        }
+        for(var y = 0; y < (defaultSize.y); y++){
+            for(var x = 0; x < (defaultSize.x); x++){
+                for(var i = 0; i < snake.length - 1; i++){
+                    if(snake[i].x/box == x && snake[i].y/box == y && i != 0){
+                        if(x + 1 != snake[i+1].x/box && x + 1 != snake[i-1].x/box){
+                            ctx.beginPath();
+                            ctx.strokeStyle = "black";
+                            ctx.lineWidth = lineWidth;
+                            ctx.moveTo(x*box + box, y*box);
+                            ctx.lineTo(x*box + box, (y+1)*box);
+                            ctx.stroke();
+                        }
+                        if(y + 1 != snake[i+1].y/box && y + 1 != snake[i-1].y/box){
+                            ctx.beginPath();
+                            ctx.strokeStyle = "black";
+                            ctx.lineWidth = lineWidth;
+                            ctx.moveTo(x*box, y*box + box);
+                            ctx.lineTo((x+1)*box, y*box + box);
+                            ctx.stroke();
+                        }
+                    }
+                    //create correct line for snake head
+                    if(x == snake[0].x/box && y == snake[0].y/box && i == 0){
+                        if(x + 1 != snake[i+1].x/box){
+                            ctx.beginPath();
+                            ctx.strokeStyle = "black";
+                            ctx.lineWidth = lineWidth;
+                            ctx.moveTo(x*box + box, y*box);
+                            ctx.lineTo(x*box + box, (y+1)*box);
+                            ctx.stroke();
+                        }
+                        if(y + 1 != snake[i+1].y/box){
+                            ctx.beginPath();
+                            ctx.strokeStyle = "black";
+                            ctx.lineWidth = lineWidth;
+                            ctx.moveTo(x*box, y*box + box);
+                            ctx.lineTo((x+1)*box, y*box + box);
+                            ctx.stroke();
+                        }
+                    }
+                    //create correct line for the snake tail
+                    if(snake.length > 1 && x == snake[snake.length - 1].x/box && y == snake[snake.length - 1].y/box){
+                        if(x + 1 != snake[snake.length - 2].x/box){
+                            ctx.beginPath();
+                            ctx.strokeStyle = "black";
+                            ctx.lineWidth = lineWidth;
+                            ctx.moveTo(x*box + box, y*box);
+                            ctx.lineTo(x*box + box, (y+1)*box);
+                            ctx.stroke();
+                        }
+                        if(y + 1 != snake[snake.length - 2].y/box){
+                            ctx.beginPath();
+                            ctx.strokeStyle = "black";
+                            ctx.lineWidth = lineWidth;
+                            ctx.moveTo(x*box, y*box + box);
+                            ctx.lineTo((x+1)*box, y*box + box);
+                            ctx.stroke();
+                        }
+                    }
+                    
+                }
+
             }
         }
         max = true;
@@ -1325,7 +1419,7 @@ var aiMode5 = document.getElementById("ai5");
 function changeSpeed(){
 
     if(defaultSpeed.checked == true && (aiMode3.checked == true || aiMode4.checked == true || aiMode5.checked == true)){
-        speed = 30; //15
+        speed = 35; //15
     }
     else if(defaultSpeed.checked == true){
         speed = 65;
@@ -1337,7 +1431,7 @@ function changeSpeed(){
         speed = 100;
     }
     else if(fastSpeed.checked == true && (aiMode3.checked == true || aiMode4.checked == true || aiMode5.checked == true)){
-        speed = 45;
+        speed = 15;
     }
     else if(fastSpeed.checked == true){
         speed = 35;
