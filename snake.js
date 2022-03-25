@@ -1027,7 +1027,7 @@ if(mode == 5){
             }
         }
     }
-    if(takeShortest == true && panic == false && score < 165){
+    if(takeShortest == true && panic == false && score < 155){
         snakeX = hamCycle2[next_shortest][0];
         snakeY = hamCycle2[next_shortest][1];
     }
