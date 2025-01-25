@@ -101,7 +101,7 @@
             @media (max-width: 768px){
                 canvas{
                     margin-left: 240px;
-                    transform:scale(.75);
+                    transform:scale(.4);
                 }
             }
 
