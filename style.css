@@ -8,9 +8,18 @@
             br{
                 user-select:none;
             }
-
+            @media (min-width: 769px){
             .float-container{
                 align-items: center;
+
+            }
+        }
+            @media (max-width: 768px){
+            .float-container{
+
+                align-items: center;
+                display: flex;
+                flex-direction: column;}
             }
 
             .float-child1{
@@ -19,6 +28,7 @@
                 margin-right: 710px;
 
             }
+        
             .float-child2{
                 float: left;
             }
@@ -82,9 +92,12 @@
                 margin-top: 40px;
                 user-select:none;
             }
+
             canvas{
                 margin-left: 700px;
+                transform:scale(1)
             }
+
             div{
                 margin-top: 0px;
                 margin-bottom: 0px;
