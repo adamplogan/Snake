@@ -92,10 +92,17 @@
                 margin-top: 40px;
                 user-select:none;
             }
-
-            canvas{
-                margin-left: 700px;
-                transform:scale(1)
+            @media (min-width: 769px){
+                canvas{
+                    margin-left: 700px;
+                    transform:scale(1)
+                }
+            }
+            @media (max-width: 768px){
+                canvas{
+                    margin-left: 240px;
+                    transform:scale(.75);
+                }
             }
 
             div{
