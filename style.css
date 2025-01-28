@@ -101,7 +101,7 @@
             @media (max-width: 768px){
                 canvas{
                     margin-left: 240px;
-                    transform:scale(.9);
+                    transform:scale(1);
                 }
             }
 
@@ -172,7 +172,7 @@
                     display: flex;
                     margin: 0;
                     transform:scale(.55);
-                    margin-top: -270px;
+                    margin-top: -240px;
                 }
             }
             .center{
